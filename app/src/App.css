@@ -7,8 +7,11 @@
   --color-retro-border: #000000;
   --color-retro-card: #ffffff;
   --color-retro-yellow: #ffd400;
+  --color-retro-yellow-hover: #facc15;
   --color-retro-green: #00c853;
   --color-retro-green-hover: #00b448;
+    --color-retro-orange: #FF8000;
+    --color-retro-orange-hover: #FF6600;
   --color-retro-blue: #6BC5E8;
   --radius-retro: 24px;
   --radius-retro-sm: 18px;

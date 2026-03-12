@@ -4,7 +4,7 @@ import { useActiveUser } from '../state/ActiveUserContext';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { useEffect, useState } from 'react';
-import { Bot, X, RefreshCw } from 'lucide-react';
+import { Bot, X, RefreshCw, Download } from 'lucide-react';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { VoiceWsProvider, useVoiceWs } from '../state/VoiceWsContext';
 
@@ -206,6 +206,7 @@ const LayoutInner = () => {
 
   const canStartChat =
     sessionActive || !activeVoiceId || downloadedVoiceIds.has(String(activeVoiceId));
+  const needsVoiceDownload = Boolean(activeVoiceId) && !downloadedVoiceIds.has(String(activeVoiceId));
 
   useEffect(() => {
     const onDeleted = () => {
@@ -283,13 +284,17 @@ const LayoutInner = () => {
                         type="button"
                         className="retro-btn retro-btn-purple no-lift px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                         onClick={() => {
+                          if (needsVoiceDownload && activeVoiceId) {
+                            navigate(`/voices?voice_id=${encodeURIComponent(String(activeVoiceId))}`);
+                            return;
+                          }
                           if (!canStartChat) return;
                           navigate('/test');
                           voiceWs.connect();
                         }}
-                        disabled={!canStartChat}
+                        disabled={!canStartChat && !needsVoiceDownload}
                       >
-                        <Bot size={18} className="shrink-0" /> Preview
+                        {needsVoiceDownload ? <Download size={18} className="shrink-0" /> : <Bot size={18} className="shrink-0" />} {needsVoiceDownload ? 'Download voice' : 'Preview'}
                       </button>
                     )}
                     {!localActive && deviceConnected && !isEsp32View && (
@@ -339,11 +344,6 @@ const LayoutInner = () => {
                       >
                         <X size={18} className="shrink-0" /> End
                       </button>
-                    )}
-                    {!canStartChat && !sessionActive && !deviceConnected && (
-                      <div className="mt-1 font-mono text-xs text-gray-500">
-                        Download voice to start chat
-                      </div>
                     )}
                   </div>
                 </div>

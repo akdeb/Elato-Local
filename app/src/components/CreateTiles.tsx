@@ -1,5 +1,5 @@
 import React from "react";
-import { BookOpen, Dices, MessageCircle, Mic } from "lucide-react";
+import { MessageCircle, Mic } from "lucide-react";
 
 export type CreateTileKind = "game" | "story" | "character" | "voice";
 
@@ -18,35 +18,19 @@ const TILE_CONFIG: Array<{
   Icon: React.ComponentType<{ size?: number; className?: string }>;
 }> = [
   {
-    kind: "game",
-    label: "Game",
-    helper: "Play a game with AI",
-    bgClass: "!bg-yellow-300",
-    shadowColor: "#facc15",
-    Icon: Dices,
-  },
-  {
-    kind: "story",
-    label: "Story",
-    helper: "Tell a story together",
-    bgClass: "!bg-purple-400",
-    shadowColor: "#a855f7",
-    Icon: BookOpen,
-  },
-  {
     kind: "character",
     label: "Character",
-    helper: "Chat with any character",
-    bgClass: "!bg-red-400",
-    shadowColor: "#ef4444",
+    helper: "Create a storytelling experience",
+    bgClass: "!bg-yellow-300",
+    shadowColor: "#facc15",
     Icon: MessageCircle,
   },
   {
     kind: "voice",
     label: "Voice",
     helper: "Clone a voice",
-    bgClass: "!bg-blue-500",
-    shadowColor: "#2563eb",
+    bgClass: "!bg-red-400",
+    shadowColor: "#ef4444",
     Icon: Mic,
   },
 ];

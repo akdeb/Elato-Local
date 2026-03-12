@@ -1,4 +1,4 @@
-export const STARTUP_DEFAULT_MESSAGE = "Starting Local AI Engine...";
+export const STARTUP_DEFAULT_MESSAGE = "Starting Local AI Experience...";
 export const SETUP_COPY = {
   appName: "ELATO",
   appSuffix: "Home",

@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
-import { Image as ImageIcon, Pencil, Trash2, BookOpen, Maximize2, Moon } from 'lucide-react';
+import { Image as ImageIcon, Pencil, BookOpen, Moon, Maximize2 } from 'lucide-react';
 import { useActiveUser } from '../state/ActiveUserContext';
 import { ExperienceModal, ExperienceForModal } from '../components/ExperienceModal';
 import { Link, useSearchParams } from 'react-router-dom';
 import { convertFileSrc } from '@tauri-apps/api/core';
+import { Modal } from '../components/Modal';
 import { VoiceActionButtons } from '../components/VoiceActionButtons';
 import { useVoicePlayback } from '../hooks/useVoicePlayback';
-import { Modal } from '../components/Modal';
 
 type ExperienceType = 'personality' | 'game' | 'story';
 
@@ -21,10 +21,19 @@ export const Playground = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [brokenImgById, setBrokenImgById] = useState<Record<string, boolean>>({});
+  const [imgRefreshById, setImgRefreshById] = useState<Record<string, number>>({});
   const [downloadedVoiceIds, setDownloadedVoiceIds] = useState<Set<string>>(new Set());
   const [downloadingVoiceId, setDownloadingVoiceId] = useState<string | null>(null);
   const [audioSrcByVoiceId, setAudioSrcByVoiceId] = useState<Record<string, string>>({});
+  
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedExperience, setSelectedExperience] = useState<ExperienceForModal | null>(null);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [infoExperience, setInfoExperience] = useState<any | null>(null);
 
+  const { activeUserId, activeUser, refreshUsers } = useActiveUser();
   const { playingVoiceId, isPaused, toggle: toggleVoice } = useVoicePlayback(async (voiceId) => {
     let src = audioSrcByVoiceId[voiceId];
     if (!src) {
@@ -35,19 +44,11 @@ export const Playground = () => {
     }
     return src;
   });
-  
-  // Modal state
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [selectedExperience, setSelectedExperience] = useState<ExperienceForModal | null>(null);
-  const [infoOpen, setInfoOpen] = useState(false);
-  const [infoExperience, setInfoExperience] = useState<any | null>(null);
-
-  const { activeUserId, activeUser, refreshUsers } = useActiveUser();
 
   const GLOBAL_IMAGE_BASE_URL = 'https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev';
 
   const imgSrcFor = (p: any) => {
+    const refreshKey = p?.id != null ? imgRefreshById[String(p.id)] : undefined;
     if (p?.is_global) {
       const id = p?.id != null ? String(p.id) : '';
       if (!id) return null;
@@ -56,7 +57,8 @@ export const Playground = () => {
     const src = typeof p?.img_src === 'string' ? p.img_src.trim() : '';
     if (!src) return null;
     if (/^https?:\/\//i.test(src)) return src;
-    return convertFileSrc(src);
+    const base = convertFileSrc(src);
+    return refreshKey ? `${base}?v=${refreshKey}` : base;
   };
 
   const toTimestamp = (v: any) => {
@@ -125,22 +127,6 @@ export const Playground = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const loadDownloaded = async () => {
-      try {
-        const ids = await api.listDownloadedVoices();
-        if (!cancelled) setDownloadedVoiceIds(new Set(Array.isArray(ids) ? ids : []));
-      } catch {
-        if (!cancelled) setDownloadedVoiceIds(new Set());
-      }
-    };
-    loadDownloaded();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
     const loadMode = async () => {
       try {
         const res = await api.getAppMode();
@@ -170,6 +156,47 @@ export const Playground = () => {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadDownloaded = async () => {
+      try {
+        const ids = await api.listDownloadedVoices();
+        if (!cancelled) setDownloadedVoiceIds(new Set(Array.isArray(ids) ? ids : []));
+      } catch {
+        if (!cancelled) setDownloadedVoiceIds(new Set());
+      }
+    };
+    loadDownloaded();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const assignToActiveUser = async (experienceId: string) => {
+    if (!activeUserId) {
+      setError('Select an active user first');
+      return;
+    }
+    try {
+      setError(null);
+      await api.updateUser(activeUserId, { current_personality_id: experienceId });
+      await refreshUsers();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to assign experience');
+    }
+  };
+
+  const deleteExperience = async (p: any) => {
+    if (p?.is_global) return;
+    try {
+      setError(null);
+      await api.deleteExperience(p.id);
+      await load();
+    } catch (err: any) {
+      setError(err?.message || 'Failed to delete experience');
+    }
+  };
 
   const voiceById = useMemo(() => {
     const m = new Map<string, any>();
@@ -211,31 +238,6 @@ export const Playground = () => {
     }
   };
 
-  const assignToActiveUser = async (experienceId: string) => {
-    if (!activeUserId) {
-      setError('Select an active user first');
-      return;
-    }
-    try {
-      setError(null);
-      await api.updateUser(activeUserId, { current_personality_id: experienceId });
-      await refreshUsers();
-    } catch (e: any) {
-      setError(e?.message || 'Failed to assign experience');
-    }
-  };
-
-  const deleteExperience = async (p: any) => {
-    if (p?.is_global) return;
-    try {
-      setError(null);
-      await api.deleteExperience(p.id);
-      await load();
-    } catch (err: any) {
-      setError(err?.message || 'Failed to delete experience');
-    }
-  };
-
   const handleEdit = (p: any, e: React.MouseEvent) => {
     e.stopPropagation();
     setModalMode('edit');
@@ -263,6 +265,42 @@ export const Playground = () => {
         mode={modalMode}
         experience={selectedExperience}
         experienceType={activeTab}
+        imageSrc={selectedExperience ? imgSrcFor(selectedExperience) : null}
+        imageBroken={Boolean(selectedExperience && brokenImgById[String(selectedExperience.id)])}
+        onImageError={() => {
+          if (!selectedExperience) return;
+          setBrokenImgById((prev) => ({ ...prev, [String(selectedExperience.id)]: true }));
+        }}
+        onImageSelect={async (f) => {
+          if (!selectedExperience) return;
+          const buf = await f.arrayBuffer();
+          let binary = '';
+          const bytes = new Uint8Array(buf);
+          const chunkSize = 0x8000;
+          for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.subarray(i, i + chunkSize);
+            binary += String.fromCharCode(...chunk);
+          }
+          const b64 = btoa(binary);
+          const ext = (f.name.split('.').pop() || '').toLowerCase();
+          const savedPath = await api.saveExperienceImageBase64(
+            String(selectedExperience.id),
+            b64,
+            ext || null
+          );
+          const nextImgSrc = savedPath?.path || savedPath;
+          await api.updateExperience(String(selectedExperience.id), { img_src: nextImgSrc });
+          setSelectedExperience((prev) => {
+            if (!prev) return prev;
+            return { ...prev, img_src: nextImgSrc };
+          });
+          setBrokenImgById((prev) => ({ ...prev, [String(selectedExperience.id)]: false }));
+          setImgRefreshById((prev) => ({ ...prev, [String(selectedExperience.id)]: Date.now() }));
+          await load();
+        }}
+        onDelete={selectedExperience ? async () => {
+          await deleteExperience(selectedExperience);
+        } : undefined}
         onClose={() => setModalOpen(false)}
         onSuccess={async () => {
           await load();
@@ -276,39 +314,80 @@ export const Playground = () => {
           setInfoOpen(false);
           setInfoExperience(null);
         }}
-        panelClassName="w-full max-w-2xl"
+        panelClassName="w-full max-w-6xl"
       >
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-          <div className="w-full h-[200px] rounded-[24px] border bg-orange-50/50 border-gray-200 flex items-center justify-center overflow-hidden" 
-style={{
-                            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)`,
-                            backgroundSize: '6px 6px'
-                        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 h-[75vh]">
+          <div
+            className="h-full rounded-[24px] border bg-orange-50/50 border-gray-200 flex items-center justify-center overflow-hidden"
+            style={{
+              backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)`,
+              backgroundSize: '6px 6px'
+            }}
+          >
             {infoExperience && imgSrcFor(infoExperience) && !brokenImgById[String(infoExperience.id)] ? (
               <img
                 src={imgSrcFor(infoExperience) || ''}
                 alt=""
-                className="h-auto w-auto max-h-full max-w-full object-contain object-center"
+                className="h-full w-full object-contain object-center p-4"
                 onError={() => {
                   setBrokenImgById((prev) => ({ ...prev, [String(infoExperience.id)]: true }));
                 }}
               />
             ) : (
-              <ImageIcon size={22} className="text-gray-500" />
+              <ImageIcon size={24} className="text-gray-500" />
             )}
           </div>
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-gray-500">About</div>
-            <div className="text-sm text-gray-700 whitespace-pre-wrap">
-              {infoExperience?.short_description || '—'}
+
+          <div className="h-full overflow-y-auto pr-2 space-y-5">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Voice</div>
+              <div className="mt-1 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  {infoExperience?.voice_id ? (
+                    <Link
+                      to={`/voices?voice_id=${encodeURIComponent(String(infoExperience.voice_id))}`}
+                      onClick={() => {
+                        setInfoOpen(false);
+                        setInfoExperience(null);
+                      }}
+                      className="block text-sm font-bold truncate"
+                      title="View voice"
+                    >
+                      {voiceById.get(String(infoExperience.voice_id))?.voice_name || infoExperience.voice_id}
+                    </Link>
+                  ) : (
+                    <div className="text-sm text-gray-700">—</div>
+                  )}
+                </div>
+                {infoExperience?.voice_id && (
+                  <div className="shrink-0">
+                    <VoiceActionButtons
+                      voiceId={String(infoExperience.voice_id)}
+                      isDownloaded={downloadedVoiceIds.has(String(infoExperience.voice_id))}
+                      downloadingVoiceId={downloadingVoiceId}
+                      onDownload={(id) => downloadVoice(id)}
+                      onTogglePlay={(id) => togglePlay(id)}
+                      isPlaying={playingVoiceId === String(infoExperience.voice_id)}
+                      isPaused={isPaused}
+                      size="small"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Voice</div>
-            <div className="text-sm text-gray-900">
-              {infoExperience?.voice_id
-                ? voiceById.get(String(infoExperience.voice_id))?.voice_name || infoExperience.voice_id
-                : '—'}
+
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Subtitle</div>
+              <div className="text-sm text-gray-700 whitespace-pre-wrap">
+                {infoExperience?.short_description || '—'}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-500">Prompt</div>
+              <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                {infoExperience?.prompt || '—'}
+              </div>
             </div>
           </div>
         </div>
@@ -329,7 +408,7 @@ style={{
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-black flex items-center gap-3">
           <BookOpen size={28} />
-          STORIES
+          CARDS
         </h2>
         <div className="inline-flex items-center gap-3 rounded-full px-3 py-2">
           <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-700">
@@ -366,63 +445,21 @@ style={{
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') assignToActiveUser(p.id);
             }}
-            className={`retro-card relative group text-left cursor-pointer transition-shadow flex flex-col ${activeUser?.current_personality_id === p.id ? 'retro-selected' : 'retro-not-selected'}`}
+            className={`retro-card group text-left cursor-pointer transition-shadow flex flex-col ${activeUser?.current_personality_id === p.id ? 'retro-selected' : 'retro-not-selected'}`}
 style={{
   padding: "0rem"
 }}
           >
-            <div className="absolute top-2 right-2 flex flex-col items-center gap-2 z-10">
-              <button
-                type="button"
-                className="retro-icon-btn"
-                aria-label="Details"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setInfoExperience(p);
-                  setInfoOpen(true);
-                }}
-                title="Details"
-              >
-                <Maximize2 size={16} />
-              </button>
-              {!p.is_global && (
-                <button
-                  type="button"
-                  className="retro-icon-btn"
-                  aria-label="Edit"
-                  onClick={(e) => handleEdit(p, e)}
-                  title="Edit"
-                >
-                  <Pencil size={16} />
-                </button>
-              )}
-
-              {!p.is_global && (
-                <button
-                  type="button"
-                  className="retro-icon-btn"
-                  aria-label="Delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void deleteExperience(p);
-                  }}
-                  title="Delete"
-                >
-                  <Trash2 size={16} />
-                </button>
-              )}
-            </div>
-
             <div className={`flex flex-col items-start gap-4`}>
               <div className={`w-full`}>
                 {!p.is_global ? (
-                  <label
-                    className={`w-full h-[160px] rounded-t-[24px] ${imgSrcFor(p) ? 'retro-dotted' : ''} bg-white flex items-center justify-center cursor-pointer overflow-hidden`}
+                  <div
+                    className={`w-full h-[160px] rounded-t-[24px] bg-orange-50/50 flex items-center justify-center cursor-pointer overflow-hidden`}
+style={{
+                            backgroundImage: `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)`,
+                            backgroundSize: '6px 6px'
+                        }}
                     title="Upload image"
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={(e) => {
-                      e.stopPropagation();
-                    }}
                   >
                     {imgSrcFor(p) && !brokenImgById[String(p.id)] ? (
                       <div className="w-full h-full flex items-center justify-center overflow-hidden">
@@ -438,39 +475,7 @@ style={{
                     ) : (
                       <ImageIcon size={18} className="text-gray-600" />
                     )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0] || null;
-                        if (!f) return;
-                        try {
-                          const buf = await f.arrayBuffer();
-                          let binary = '';
-                          const bytes = new Uint8Array(buf);
-                          const chunkSize = 0x8000;
-                          for (let i = 0; i < bytes.length; i += chunkSize) {
-                            const chunk = bytes.subarray(i, i + chunkSize);
-                            binary += String.fromCharCode(...chunk);
-                          }
-                          const b64 = btoa(binary);
-                          const ext = (f.name.split('.').pop() || '').toLowerCase();
-                          const savedPath = await api.saveExperienceImageBase64(
-                            String(p.id),
-                            b64,
-                            ext || null
-                          );
-
-                          await api.updateExperience(String(p.id), { img_src: savedPath?.path || savedPath });
-                          await load();
-                        } catch (err: any) {
-                          setError(err?.message || 'Failed to save image');
-                        }
-                      }}
-                    />
-                  </label>
+                  </div>
                 ) : (
                   <div className="w-full h-[160px] rounded-t-[24px] bg-orange-50/50 flex items-center justify-center overflow-hidden"                         
 style={{
@@ -495,41 +500,40 @@ style={{
                 )}
               </div>
 
-              <div className="min-w-0 flex-1 p-4">
+              <div className="min-w-0 relative flex-1 p-4">
+            <div className="absolute top-2 right-2 flex flex-col items-center gap-2 z-10">
+              {p.is_global && (
+                <button
+                  type="button"
+                  className="retro-icon-btn"
+                  aria-label="Details"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setInfoExperience(p);
+                    setInfoOpen(true);
+                  }}
+                  title="Details"
+                >
+                  <Maximize2 size={16} />
+                </button>
+              )}
+              {!p.is_global && (
+                <button
+                  type="button"
+                  className="retro-icon-btn"
+                  aria-label="Edit"
+                  onClick={(e) => handleEdit(p, e)}
+                  title="Edit"
+                >
+                  <Pencil size={16} />
+                </button>
+              )}
+            </div>
+
                 <h3 className="text-lg font-black leading-tight wrap-break-word retro-clamp-2">{p.name}</h3>
                 <p className="text-gray-600 text-xs font-medium mt-2 retro-clamp-2">
                   {p.short_description ? String(p.short_description) : '—'}
                 </p>
-              </div>
-            </div>
-
-            <div className="mt-auto border-t border-gray-200 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs font-bold uppercase tracking-wider text-gray-400">Voice</div>
-                  <Link
-                    to={`/voices?voice_id=${encodeURIComponent(p.voice_id)}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="block text-xs font-bold truncate"
-                    title="View voice"
-                  >
-                    {voiceById.get(p.voice_id)?.voice_name || p.voice_id}
-                  </Link>
-                </div>
-
-                <div className="shrink-0">
-                  <VoiceActionButtons
-                    voiceId={String(p.voice_id)}
-                    isDownloaded={downloadedVoiceIds.has(String(p.voice_id))}
-                    downloadingVoiceId={downloadingVoiceId}
-                    onDownload={(id) => downloadVoice(id)}
-                    onTogglePlay={(id) => togglePlay(id)}
-                    isPlaying={playingVoiceId === String(p.voice_id)}
-                    isPaused={isPaused}
-                    stopPropagation
-                    size="small"
-                  />
-                </div>
               </div>
             </div>
           </div>
