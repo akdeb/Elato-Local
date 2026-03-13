@@ -18,7 +18,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data: blob:; media-src 'self' asset: http://asset.localhost data: blob:; connect-src 'self' http://127.0.0.1:* ws://127.0.0.1:* http://localhost:* ws://localhost:* ipc:;",
+      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data: blob: https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev https://pub-6b92949063b142d59fc3478c56ec196c.r2.dev; media-src 'self' asset: http://asset.localhost data: blob: https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev https://pub-6b92949063b142d59fc3478c56ec196c.r2.dev; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://127.0.0.1:* ws://127.0.0.1:* http://localhost:* ws://localhost:* ipc: https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev https://pub-6b92949063b142d59fc3478c56ec196c.r2.dev;",
       "assetProtocol": {
         "enable": true,
         "scope": ["$DATA/**/images/*", "$DATA/**/images/**"]
@@ -28,9 +28,10 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "resources": [
-      "../../resources/python-backend"
-    ],
+    "resources": {
+      "../../resources/python-backend": "python-backend",
+      "../../resources/firmware": "firmware"
+    },
     "macOS": {
       "infoPlist": "./Info.plist",
       "entitlements": "./entitlements.plist",

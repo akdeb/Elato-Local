@@ -57,7 +57,7 @@ export const ChatSplitAvatar = ({
           <img
             src={characterImageSrc}
             alt=""
-            className="w-full h-full object-contain object-left"
+            className="w-full h-full object-cover object-left -translate-x-4"
             onError={() => setImgError(true)}
           />
         ) : (

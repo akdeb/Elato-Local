@@ -41,68 +41,11 @@ def resolve_firmware_dir() -> Optional[Path]:
     return None
 
 
-def _find_arduino_dir() -> Optional[Path]:
-    # Explicit override wins; otherwise deterministic repo-root path.
-    env_dir = (os.environ.get("ELATO_ARDUINO_DIR") or "").strip()
-    if env_dir:
-        d = Path(env_dir).expanduser().resolve()
-        if (d / "platformio.ini").exists():
-            return d
-
-    repo_arduino = _repo_root() / "arduino"
-    if (repo_arduino / "platformio.ini").exists():
-        return repo_arduino
-    return None
-
-
-def _extract_default_env(platformio_ini: Path) -> str:
-    try:
-        text = platformio_ini.read_text(encoding="utf-8")
-    except Exception:
-        return "esp32-s3-devkitc-1"
-    for line in text.splitlines():
-        s = line.strip()
-        if s.startswith("[env:") and s.endswith("]"):
-            return s[5:-1]
-    return "esp32-s3-devkitc-1"
-
-
-def _build_firmware_with_platformio(arduino_dir: Path) -> Tuple[Optional[Path], str]:
-    env_name = _extract_default_env(arduino_dir / "platformio.ini")
-    cmd = ["platformio", "run", "-e", env_name]
-    proc = subprocess.run(
-        cmd,
-        cwd=str(arduino_dir),
-        capture_output=True,
-        text=True,
-    )
-    output = (proc.stdout or "") + ("\n" if proc.stdout and proc.stderr else "") + (proc.stderr or "")
-    if proc.returncode != 0:
-        return None, output
-
-    out_dir = arduino_dir / ".pio" / "build" / env_name
-    if _has_flash_images(out_dir):
-        return out_dir, output
-    return None, output + "\nBuild succeeded but expected flash images were not found."
-
-
-def prepare_firmware_images(auto_build: bool = True) -> Tuple[Optional[Path], str]:
+def prepare_firmware_images() -> tuple[Optional[Path], str]:
     existing = resolve_firmware_dir()
     if existing:
         return existing, f"Using firmware images from: {existing}"
-
-    if not auto_build:
-        return None, "Firmware images are missing and auto-build is disabled."
-
-    arduino_dir = _find_arduino_dir()
-    if not arduino_dir:
-        return None, "Firmware images are missing and no Arduino project was found to build."
-
-    built_dir, build_log = _build_firmware_with_platformio(arduino_dir)
-    if not built_dir:
-        return None, "Firmware build failed.\n" + build_log
-
-    return built_dir, f"Built firmware using PlatformIO in {arduino_dir}\n{build_log}"
+    return None, "Firmware images are missing from bundled resources."
 
 
 def firmware_bin_path() -> Path:
@@ -120,15 +63,15 @@ def _resolve_flash_files(firmware_path: Path, offset: str) -> List[Tuple[str, Pa
     partitions = base_dir / "partitions.bin"
     firmware = base_dir / "firmware.bin"
 
-    if bootloader.exists() and partitions.exists() and firmware.exists():
-        return [
-            ("0x0000", bootloader),
-            ("0x8000", partitions),
-            ("0x10000", firmware),
-        ]
-
-    # Fallback for builds that only ship app firmware.
-    return [(offset, firmware_path)]
+    if not (bootloader.exists() and partitions.exists() and firmware.exists()):
+        raise FileNotFoundError(
+            "Required firmware images missing. Expected bootloader.bin, partitions.bin, and firmware.bin."
+        )
+    return [
+        ("0x0000", bootloader),
+        ("0x8000", partitions),
+        ("0x10000", firmware),
+    ]
 
 
 def run_firmware_flash(

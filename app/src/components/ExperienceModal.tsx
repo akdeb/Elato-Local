@@ -227,7 +227,7 @@ export function ExperienceModal({
                 <div className="rounded-full">
                      <img src={logoPng} alt="" className="w-10 h-10" />
                 </div>
-                <h3 className="font-black text-2xl uppercase mt-2">Create Your {labels.singular}</h3>
+                <h3 className="font-black text-2xl uppercase mt-2">build a character</h3>
                 {createVoiceId && (
                   <div className="font-mono text-xs text-gray-700">
                     Create with {createVoiceName || createVoiceId}

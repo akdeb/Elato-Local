@@ -13,23 +13,31 @@ use crate::paths::{get_elato_dir, get_images_dir, get_venv_python, get_voices_di
 pub struct ApiProcess(pub Mutex<Option<Child>>);
 
 fn resolve_python_backend_dir(app: &AppHandle) -> Result<PathBuf, String> {
-    let backend_dir = if cfg!(debug_assertions) {
+    if cfg!(debug_assertions) {
         let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         let repo_root = manifest_dir
             .parent()
             .and_then(|p| p.parent())
             .ok_or_else(|| "Failed to resolve repo root from CARGO_MANIFEST_DIR".to_string())?;
-        repo_root.join("resources").join("python-backend")
-    } else {
-        app.path()
-            .resource_dir()
-            .map_err(|e| format!("Failed to resolve app resource dir: {e}"))?
-            .join("python-backend")
-    };
+        let backend_dir = repo_root.join("resources").join("python-backend");
+        if backend_dir.join("server.py").exists() {
+            return Ok(backend_dir);
+        }
+        return Err(format!(
+            "python-backend resources not found at debug path: {}",
+            backend_dir.display()
+        ));
+    }
+
+    let backend_dir = app
+        .path()
+        .resource_dir()
+        .map_err(|e| format!("Failed to resolve app resource dir: {e}"))?
+        .join("python-backend");
 
     if !backend_dir.join("server.py").exists() {
         return Err(format!(
-            "python-backend resources not found at deterministic path: {}",
+            "python-backend resources not found at expected bundle path: {}",
             backend_dir.display()
         ));
     }
@@ -53,15 +61,6 @@ fn resolve_firmware_dir(app: &AppHandle) -> Result<PathBuf, String> {
     };
 
     Ok(firmware_dir)
-}
-
-fn resolve_arduino_dir() -> Option<PathBuf> {
-    if !cfg!(debug_assertions) {
-        return None;
-    }
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let repo_root = manifest_dir.parent().and_then(|p| p.parent())?;
-    Some(repo_root.join("arduino"))
 }
 
 pub fn ensure_port_free(port: u16) {
@@ -166,9 +165,6 @@ pub async fn start_backend(app: AppHandle) -> Result<String, String> {
         .env("HF_HUB_ENABLE_HF_TRANSFER", "1")
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit());
-    if let Some(arduino_dir) = resolve_arduino_dir() {
-        cmd.env("ELATO_ARDUINO_DIR", arduino_dir.to_string_lossy().to_string());
-    }
 
     let child = cmd
         .spawn()
@@ -235,9 +231,6 @@ pub fn setup_backend(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Err
         .env("HF_HUB_ENABLE_HF_TRANSFER", "1")
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit());
-    if let Some(arduino_dir) = resolve_arduino_dir() {
-        cmd.env("ELATO_ARDUINO_DIR", arduino_dir.to_string_lossy().to_string());
-    }
 
     let child = cmd.spawn();
 

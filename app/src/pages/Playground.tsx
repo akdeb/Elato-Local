@@ -8,6 +8,7 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 import { Modal } from '../components/Modal';
 import { VoiceActionButtons } from '../components/VoiceActionButtons';
 import { useVoicePlayback } from '../hooks/useVoicePlayback';
+import { globalPersonalityImageUrl, versionedRemoteUrl } from '../lib/remoteAssets';
 
 type ExperienceType = 'personality' | 'game' | 'story';
 
@@ -45,18 +46,16 @@ export const Playground = () => {
     return src;
   });
 
-  const GLOBAL_IMAGE_BASE_URL = 'https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev';
-
   const imgSrcFor = (p: any) => {
     const refreshKey = p?.id != null ? imgRefreshById[String(p.id)] : undefined;
     if (p?.is_global) {
       const id = p?.id != null ? String(p.id) : '';
       if (!id) return null;
-      return `${GLOBAL_IMAGE_BASE_URL}/${encodeURIComponent(id)}.png`;
+      return globalPersonalityImageUrl(id);
     }
     const src = typeof p?.img_src === 'string' ? p.img_src.trim() : '';
     if (!src) return null;
-    if (/^https?:\/\//i.test(src)) return src;
+    if (/^https?:\/\//i.test(src)) return versionedRemoteUrl(src);
     const base = convertFileSrc(src);
     return refreshKey ? `${base}?v=${refreshKey}` : base;
   };
@@ -466,7 +465,7 @@ style={{
                         <img
                           src={imgSrcFor(p) || ''}
                           alt=""
-                          className="h-auto w-auto max-h-full max-w-full object-contain object-center origin-center transition-transform duration-200 group-hover:scale-105"
+                          className="h-full w-full object-cover object-center origin-center transition-transform duration-200 group-hover:scale-105"
                           onError={() => {
                             setBrokenImgById((prev) => ({ ...prev, [String(p.id)]: true }));
                           }}
@@ -487,7 +486,7 @@ style={{
                         <img
                           src={imgSrcFor(p) || ''}
                           alt=""
-                          className="h-auto w-auto max-h-full max-w-full object-contain object-center origin-center transition-transform duration-200 group-hover:scale-105"
+                          className="h-full w-full object-cover object-center origin-center transition-transform duration-200 group-hover:scale-105"
                           onError={() => {
                             setBrokenImgById((prev) => ({ ...prev, [String(p.id)]: true }));
                           }}
@@ -500,7 +499,7 @@ style={{
                 )}
               </div>
 
-              <div className="min-w-0 relative flex-1 p-4">
+              <div className="min-w-0 relative flex-1 px-4 pt-2 pb-4">
             <div className="absolute top-2 right-2 flex flex-col items-center gap-2 z-10">
               {p.is_global && (
                 <button
@@ -529,9 +528,8 @@ style={{
                 </button>
               )}
             </div>
-
                 <h3 className="text-lg font-black leading-tight wrap-break-word w-[96%] retro-clamp-2">{p.name}</h3>
-                <p className="text-gray-600 text-xs font-medium mt-2 retro-clamp-2">
+                <p className="text-gray-400 text-xs font-medium mt-2 retro-clamp-2">
                   {p.short_description ? String(p.short_description) : '—'}
                 </p>
               </div>

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { api } from "../api";
 import { useActiveUser } from "./ActiveUserContext";
+import { globalPersonalityImageUrl, versionedRemoteUrl } from "../lib/remoteAssets";
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || "http://127.0.0.1:8000";
 
@@ -106,17 +107,15 @@ export const VoiceWsProvider = ({ children }: { children: React.ReactNode }) => 
     return u.toString();
   }, []);
 
-  const GLOBAL_PERSONALITY_IMAGE_BASE_URL = "https://pub-a64cd21521e44c81a85db631f1cdaacc.r2.dev";
-
   const imageSrcForPersonality = (p: any) => {
     if (p?.is_global) {
       const personalityId = p?.id != null ? String(p.id) : "";
       if (!personalityId) return null;
-      return `${GLOBAL_PERSONALITY_IMAGE_BASE_URL}/${encodeURIComponent(personalityId)}.png`;
+      return globalPersonalityImageUrl(personalityId);
     }
     const src = typeof p?.img_src === "string" ? p.img_src.trim() : "";
     if (!src) return null;
-    if (/^https?:\/\//i.test(src)) return src;
+    if (/^https?:\/\//i.test(src)) return versionedRemoteUrl(src);
     return convertFileSrc(src);
   };
 

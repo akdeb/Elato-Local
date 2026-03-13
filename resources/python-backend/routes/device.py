@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 import db_service
-from services import firmware_bin_path, list_serial_ports, prepare_firmware_images, run_firmware_flash
+from services import list_serial_ports, prepare_firmware_images, run_firmware_flash
 
 router = APIRouter()
 
@@ -71,12 +71,11 @@ async def firmware_ports():
 
 @router.post("/firmware/flash")
 async def firmware_flash(body: FirmwareFlashRequest):
-    firmware_dir, prep_log = prepare_firmware_images(auto_build=True)
+    firmware_dir, prep_log = prepare_firmware_images()
     if not firmware_dir:
-        fallback = firmware_bin_path()
         raise HTTPException(
             status_code=404,
-            detail=f"Firmware images not found. {prep_log} (expected firmware at {fallback})",
+            detail=f"Firmware images not found. {prep_log}",
         )
     fw_path = firmware_dir / "firmware.bin"
 

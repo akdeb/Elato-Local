@@ -4,3 +4,4 @@ resources/python_runtime/
 **/*.pyc
 *.zip
 app/OpenToys.zip
+**/*.dmg
