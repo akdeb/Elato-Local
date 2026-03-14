@@ -26,6 +26,10 @@ Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. Op
 5. Run `npm install`
 6. Run `npm run tauri dev`
 
+## App Design
+
+![App Design](assets/app.png)
+
 ## Stack
 
 - STT: Whisper Turbo ASR
