@@ -625,6 +625,11 @@ async def websocket_unified(websocket: WebSocket, client_type: str = Query(defau
                     if cancel_event.is_set() or not ws_open:
                         break
                     llm_parts.append(delta)
+                    if not for_esp32:
+                        try:
+                            await websocket.send_text(json.dumps({"type": "response_delta", "text": delta}))
+                        except Exception:
+                            pass
                     carry += delta
                     ready, carry = _extract_speakable_chunks(carry, flush=False, soft_limit=tts_soft_limit)
                     for chunk in ready:

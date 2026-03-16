@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type ChatMessage = {
   id: string;
@@ -14,6 +14,42 @@ type ChatTranscriptProps = {
   scrollMarginTop?: number;
   emptyLabel?: string;
   className?: string;
+  progressiveAi?: boolean;
+};
+
+const ProgressiveAiText = ({ text, enabled }: { text: string; enabled: boolean }) => {
+  const [visibleChars, setVisibleChars] = useState(enabled ? 0 : text.length);
+
+  useEffect(() => {
+    if (!enabled) {
+      setVisibleChars(text.length);
+      return;
+    }
+    setVisibleChars((prev) => Math.min(prev, text.length));
+    if (!text) return;
+
+    const step = Math.max(1, Math.ceil(text.length / 90));
+    const timer = window.setInterval(() => {
+      setVisibleChars((prev) => {
+        if (prev >= text.length) {
+          window.clearInterval(timer);
+          return prev;
+        }
+        return Math.min(text.length, prev + step);
+      });
+    }, 16);
+
+    return () => window.clearInterval(timer);
+  }, [enabled, text]);
+
+  const shown = useMemo(() => text.slice(0, visibleChars), [text, visibleChars]);
+  const opacity = text.length > 0 ? Math.min(1, 0.35 + (visibleChars / text.length) * 0.65) : 1;
+
+  return (
+    <span className="transition-opacity duration-150" style={{ opacity }}>
+      {shown}
+    </span>
+  );
 };
 
 export const ChatTranscript = ({
@@ -23,6 +59,7 @@ export const ChatTranscript = ({
   scrollMarginTop = 0,
   emptyLabel = "Experience loading...",
   className = "",
+  progressiveAi = false,
 }: ChatTranscriptProps) => {
   const endRef = useRef<HTMLDivElement | null>(null);
   const lastAiRef = useRef<HTMLDivElement | null>(null);
@@ -70,7 +107,13 @@ export const ChatTranscript = ({
                   <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isAi ? "text-gray-600" : "text-white/80"}`}>
                     {isAi ? "AI" : "You"}
                   </div>
-                  <div className="font-medium leading-relaxed whitespace-pre-wrap">{entry.text}</div>
+                  <div className="font-medium leading-relaxed whitespace-pre-wrap">
+                    {isAi && progressiveAi ? (
+                      <ProgressiveAiText text={entry.text} enabled />
+                    ) : (
+                      entry.text
+                    )}
+                  </div>
                   <div className={`mt-2 font-mono text-[10px] text-right ${isAi ? "text-gray-500" : "text-white/80"}`}>
                     {new Date(entry.timestamp).toLocaleString()}
                   </div>

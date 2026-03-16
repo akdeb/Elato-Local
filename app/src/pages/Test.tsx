@@ -220,6 +220,7 @@ export const TestPage = () => {
           isLive
           autoScroll
           scrollMarginTop={200}
+          progressiveAi
         />
       </div>
     </div>

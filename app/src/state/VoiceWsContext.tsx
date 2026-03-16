@@ -8,6 +8,7 @@ const API_BASE = (import.meta as any).env?.VITE_API_BASE || "http://127.0.0.1:80
 
 type VoiceMsg =
   | { type: "transcription"; text: string }
+  | { type: "response_delta"; text: string }
   | { type: "response"; text: string }
   | { type: "audio"; data: string }
   | { type: "audio_end" }
@@ -74,6 +75,7 @@ export const VoiceWsProvider = ({ children }: { children: React.ReactNode }) => 
 
   const [latestSessionId, setLatestSessionId] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
+  const aiDraftEntryIdRef = useRef<string | null>(null);
 
   const isRecordingRef = useRef(false);
   const isPausedRef = useRef(false);
@@ -563,8 +565,10 @@ export const VoiceWsProvider = ({ children }: { children: React.ReactNode }) => 
           }
         } else if (msg.type === "session_started") {
           setLatestSessionId(msg.session_id || null);
+          aiDraftEntryIdRef.current = null;
           setTranscript([]);
         } else if (msg.type === "transcription") {
+          aiDraftEntryIdRef.current = null;
           if (msg.text) {
             const entry: TranscriptEntry = {
               id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -577,16 +581,65 @@ export const VoiceWsProvider = ({ children }: { children: React.ReactNode }) => 
               return next.length > 200 ? next.slice(-200) : next;
             });
           }
+        } else if (msg.type === "response_delta") {
+          const delta = String(msg.text || "");
+          if (!delta) return;
+          const now = Date.now();
+          setTranscript((prev) => {
+            const next = [...prev];
+            const existingId = aiDraftEntryIdRef.current;
+            if (!existingId) {
+              const entry: TranscriptEntry = {
+                id: `${now}-${Math.random().toString(16).slice(2)}`,
+                role: "ai",
+                text: delta,
+                timestamp: now,
+              };
+              aiDraftEntryIdRef.current = entry.id;
+              next.push(entry);
+            } else {
+              const idx = next.findIndex((e) => e.id === existingId);
+              if (idx >= 0) {
+                next[idx] = { ...next[idx], text: `${next[idx].text}${delta}` };
+              } else {
+                const entry: TranscriptEntry = {
+                  id: `${now}-${Math.random().toString(16).slice(2)}`,
+                  role: "ai",
+                  text: delta,
+                  timestamp: now,
+                };
+                aiDraftEntryIdRef.current = entry.id;
+                next.push(entry);
+              }
+            }
+            return next.length > 200 ? next.slice(-200) : next;
+          });
         } else if (msg.type === "response") {
           if (msg.text) {
-            const entry: TranscriptEntry = {
-              id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-              role: "ai",
-              text: msg.text,
-              timestamp: Date.now(),
-            };
             setTranscript((prev) => {
-              const next = [...prev, entry];
+              const next = [...prev];
+              const existingId = aiDraftEntryIdRef.current;
+              if (existingId) {
+                const idx = next.findIndex((e) => e.id === existingId);
+                if (idx >= 0) {
+                  next[idx] = { ...next[idx], text: msg.text, timestamp: Date.now() };
+                } else {
+                  next.push({
+                    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                    role: "ai",
+                    text: msg.text,
+                    timestamp: Date.now(),
+                  });
+                }
+              } else {
+                next.push({
+                  id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                  role: "ai",
+                  text: msg.text,
+                  timestamp: Date.now(),
+                });
+              }
+              aiDraftEntryIdRef.current = null;
               return next.length > 200 ? next.slice(-200) : next;
             });
           }
