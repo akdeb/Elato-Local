@@ -13,7 +13,7 @@
 
 # 🎥 Demo Video
 
-[![OpenToys Demo](assets/demo.png)](https://www.youtube.com/watch?v=YTIHN36Lb7M)
+[![OpenToys Demo](assets/opentoys.gif)](https://www.youtube.com/watch?v=YTIHN36Lb7M)
 
 # 👾 OpenToys 
 
