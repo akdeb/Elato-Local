@@ -21,7 +21,7 @@ Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. Op
 
 ## Why OpenToys?
 
-- **Fully on-device**: No cloud, no subscriptions, no data leaving your home, free AI forever.
+- **Fully Local**: NO cloud, NO subscriptions, NO data leaving your home, FREE AI forever.
 - **Multilingual**: OpenToys supports multiple languages and accents: English 🇺🇸/🇬🇧, Chinese 🇨🇳, Spanish 🇪🇸, French 🇫🇷, Japanese 🇯🇵 and more!
 - **Voice Cloning**: Clone your own voice or your favorite characters with <10s of audio.
 - **Customizable**: Build your own toys, companions, robots and more with an ESP32.
