@@ -1,10 +1,9 @@
 <!-- ![OpenToys Cover](assets/cover.png) -->
+![OpenToys Demo](assets/open-toys.gif)
 
+# 👾 OpenToys 
 
-
-# 🎥 Demo Video
-
-[![OpenToys Demo](assets/opentoys.gif)](https://www.youtube.com/watch?v=YTIHN36Lb7M)
+Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. OpenToys enables multilingual realtime speech with voice cloning andruns fully on-device on Apple Silicon without sending your data to the cloud.
 
 <div align="center">
 <div style="display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; justify-content:center;">
@@ -17,9 +16,10 @@
 </div>
 </div>
 
-# 👾 OpenToys 
+# 🎥 Demo Video
 
-Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. OpenToys enables multilingual realtime speech with voice cloning andruns fully on-device on Apple Silicon without sending your data to the cloud.
+[![OpenToys Demo](assets/demo.png)](https://www.youtube.com/watch?v=Ld5r6vXNiOM)
+
 
 ## Why OpenToys?
 
