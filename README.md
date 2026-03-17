@@ -22,7 +22,7 @@ Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. Op
 ## Why OpenToys?
 
 - **Fully Local**: NO cloud, NO subscriptions, NO data leaving your home, FREE AI forever.
-- **Multilingual**: OpenToys supports multiple languages and accents: English 🇺🇸/🇬🇧, Chinese 🇨🇳, Spanish 🇪🇸, French 🇫🇷, Japanese 🇯🇵 and more!
+- **Multilingual**: OpenToys supports multiple languages and accents: English 🇺🇸/🇬🇧, Chinese 🇨🇳, Spanish 🇪🇸, French 🇫🇷, Japanese 🇯🇵, Korean 🇰🇷, Portuguese 🇵🇹, German 🇩🇪, Italian 🇮🇹 and more!
 - **Voice Cloning**: Clone your own voice or your favorite characters with <10s of audio.
 - **Customizable**: Build your own toys, companions, robots and more with an ESP32.
 - **Open-source**: The community is open-source and free to use and contribute to.
@@ -47,7 +47,7 @@ Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. Op
 ![App Design](assets/app.png)
 
 ## Cards & Stories
-Create experiences with personalities that can play games, tell stories, engage in educational conversations and more. Here are some example characters: Math Bear, Cosmo the Monkey, Bio Shark, Coach Carter and more!
+Create experiences with personalities that can play games, tell stories, engage in educational conversations. Here are some example characters: Math Bear, Cosmo the Monkey, Bio Shark, Coach Carter and more!
 
 <p align="center">
 <img src="assets/card1.png" height="280">
@@ -80,7 +80,7 @@ Create experiences with personalities that can play games, tell stories, engage 
 
 ## 🛡️ Safety Considerations
 
-AI systems (local or cloud) are not perfect. This project is built with privacy in mind, but there are still important limitations:
+AI systems (local or cloud) are not perfect. This project is built with data privacy and safety in mind, but there are still important limitations:
 
 - **Hallucinations**: LLM and TTS models can give incorrect or misleading answers. This should not be treated as a source of truth.
 - **Inappropriate outputs**: Adversarial or ambiguous prompts can sometimes produce unsafe responses.

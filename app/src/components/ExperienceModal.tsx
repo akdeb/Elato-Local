@@ -30,6 +30,7 @@ type ExperienceModalProps = {
   onImageError?: () => void;
   onImageSelect?: (file: File) => Promise<void> | void;
   onDelete?: () => Promise<void> | void;
+  onHide?: () => Promise<void> | void;
   onClose: () => void;
   onSuccess: () => Promise<void> | void;
 };
@@ -61,6 +62,7 @@ export function ExperienceModal({
   onImageError,
   onImageSelect,
   onDelete,
+  onHide,
   onClose,
   onSuccess,
 }: ExperienceModalProps) {
@@ -205,6 +207,21 @@ export function ExperienceModal({
       onClose();
     } catch (e: any) {
       setError(e?.message || `Failed to delete ${labels.singular.toLowerCase()}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submitHide = async () => {
+    if (!experience || !onHide) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await onHide();
+      reset();
+      onClose();
+    } catch (e: any) {
+      setError(e?.message || `Failed to hide ${labels.singular.toLowerCase()}`);
     } finally {
       setSubmitting(false);
     }
@@ -370,17 +387,29 @@ export function ExperienceModal({
           </div>
         </div>
 
-        <div className="shrink-0 border-t border-gray-200 pt-4 mt-3 flex justify-end gap-3 bg-(--color-retro-card)">
-          {onDelete && (
-            <button
-              className="retro-btn retro-btn-outline"
-              type="button"
-              onClick={submitDelete}
-              disabled={submitting}
-            >
-              {submitting ? "Deleting…" : "Delete"}
-            </button>
-          )}
+        <div className="shrink-0 border-t border-gray-200 pt-4 mt-3 flex items-center justify-between gap-3 bg-(--color-retro-card)">
+          <div className="flex items-center gap-3">
+            {onHide && (
+              <button
+                className="retro-btn retro-btn-outline"
+                type="button"
+                onClick={submitHide}
+                disabled={submitting}
+              >
+                {submitting ? "Hiding…" : "Hide"}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="retro-btn retro-btn-outline"
+                type="button"
+                onClick={submitDelete}
+                disabled={submitting}
+              >
+                {submitting ? "Deleting…" : "Delete"}
+              </button>
+            )}
+          </div>
           <button className="retro-btn" type="button" onClick={submitEdit} disabled={submitting}>
             {submitting ? "Saving…" : "Save"}
           </button>
