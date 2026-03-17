@@ -51,7 +51,7 @@ Build your own Local AI Toys, Desk Companions, Robots and more with an ESP32. Op
 [Firmware Docs ⏭️](https://www.elatoai.com/docs/blog/firmware)
 
 ## Cards & Stories
-Create experiences with personalities that can play games, tell stories, engage in educational conversations. Here are some example characters: Math Bear, Cosmo the Monkey, Bio Shark, Coach Carter and more!
+Create experiences with personalities that can play games, tell stories, engage in educational conversations. Here are some example characters: Math Bear, Cosmo the Monkey, Chef Hippo, Coach Carter and more!
 
 <p align="center">
 <img src="assets/card1.png" height="280">
