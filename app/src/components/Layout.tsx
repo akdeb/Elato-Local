@@ -286,8 +286,9 @@ const LayoutInner = () => {
         {activeUser?.current_personality_id && (
           <div className="session-dock fixed bottom-0 z-20 left-64 right-0 pointer-events-none">
             <div className="session-dock-wrap max-w-4xl mx-auto px-8 pb-6 pointer-events-auto">
-              <div className="session-dock-inner bg-white border border-gray-200 rounded-full px-5 py-4 flex items-center justify-between shadow-xl">
-                <div className="min-w-0 flex items-center gap-4">
+              <div className="session-dock-inner bg-white border border-gray-200 rounded-full px-5 py-4 shadow-xl">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0 flex items-center gap-4">
                   {activePersonalityImageSrc && !activePersonalityImageError && (
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-white border border-gray-200">
                       <img
@@ -376,9 +377,8 @@ const LayoutInner = () => {
                     )}
                   </div>
                 </div>
-              </div>
-              <div className="mt-2 px-2 text-center">
-                <div className="inline-block rounded-full bg-white/80 border border-gray-200 px-3 py-1 text-[11px] leading-none font-mono text-gray-500 shadow-sm">
+                </div>
+                <div className="mt-2 text-center text-[11px] leading-tight font-mono text-gray-400">
                   The AI models can be wrong. Please verify important information.
                 </div>
               </div>

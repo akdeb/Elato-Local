@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
-import { Image as ImageIcon, Pencil, BookOpen, Moon, Maximize2, EyeOff, Eye, ChevronDown, ChevronRight } from 'lucide-react';
+import { Image as ImageIcon, Pencil, BookOpen, Moon, Maximize2, EyeOff, Eye, ChevronDown, ChevronRight, GalleryVertical } from 'lucide-react';
 import { useActiveUser } from '../state/ActiveUserContext';
 import { ExperienceModal, ExperienceForModal } from '../components/ExperienceModal';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -532,13 +532,13 @@ export const Playground = () => {
 
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-black flex items-center gap-3">
-          <BookOpen size={28} />
-          CARDS
+          <GalleryVertical size={28} />
+          Characters
         </h2>
         <div className="inline-flex items-center gap-3 rounded-full px-3 py-2">
           <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-700">
             <Moon fill={bedtimeMode ? "currentColor" : "none"} size={14} />
-            Bedtime mode
+            Story mode
           </span>
           <button
             type="button"
