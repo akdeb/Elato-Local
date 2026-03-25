@@ -1,6 +1,6 @@
-# 👾 OpenToys 
+# 👾 Elato Local
 
-Make your own conversational Local AI Toys, Desk Companions, Robots and more with an ESP32. OpenToys enables multilingual realtime speech with voice cloning and runs fully on-device on Apple Silicon chips without sending your data to the cloud.
+Make your own conversational Local AI Voice Clones, Toys, Desk Companions, Robots and more with an ESP32. Elato Local enables multilingual realtime speech with voice cloning and runs fully on-device on Apple Silicon chips without sending your data to the cloud.
 
 <div align="center">
 <div style="display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; justify-content:center;">
