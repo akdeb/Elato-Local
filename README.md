@@ -1,14 +1,11 @@
 <div align="center">
 
-<br>
-
 # 👾 OpenToys
 
 ### Open-Source Local Voice AI for Toys, Companions, and Robots
 
 **Apple Silicon (M1/M2/M3/M4/M5) · Tauri + React · ESP32-S3 · Whisper ASR · Qwen3-TTS / Chatterbox · MLX LLMs**
 
-<br>
 
 [![App](https://img.shields.io/badge/App-Tauri%20%2B%20React-black)](#stack)
 [![ESP32](https://img.shields.io/badge/Hardware-ESP32--S3-red?logo=espressif&logoColor=white)](#esp32-diy-hardware)
@@ -24,12 +21,12 @@
 
 </div>
 
-## News
-- **2026-03-14:** OpenToys launched🎉 And it's Pi Day! If you're looking to run realtime AI models like OpenAI Realtime, Gemini, Eleven Labs and more on your ESP32 device, check it out [here](https://www.github.com/akdeb/ElatoAI). 
-
 ## 🎥 Demo Video
 
 [![OpenToys Demo](assets/demo.png)](https://youtu.be/V5uNgMRsBHE)
+
+## News
+- **2026-03-14:** OpenToys launched🎉 And it's Pi Day! If you're looking to run realtime AI models like OpenAI Realtime, Gemini, Eleven Labs and more on your ESP32 device, check it out [here](https://www.github.com/akdeb/ElatoAI). 
 
 ## App Design
 <!-- ![OpenToys Cover](assets/cover.png) -->
