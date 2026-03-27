@@ -1,16 +1,30 @@
+<div align="center">
+
+<br>
+
 # 👾 Elato Local
 
-Make your own conversational Local AI Voice Clones, Toys, Desk Companions, Robots and more with an ESP32. Elato Local enables multilingual realtime speech with voice cloning and runs fully on-device on Apple Silicon chips without sending your data to the cloud.
+### Open-Source Local Voice AI for Toys, Companions, and Robots
 
-<div align="center">
-<div style="display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; justify-content:center;">
-  <!-- <a style="display:inline-flex;" href="https://cookbook.openai.com/examples/voice_solutions/running_realtime_api_speech_on_esp32_arduino_edge_runtime_elatoai"><img src="assets/oai.png" height="42" style="width: auto;"></a>   -->
-  <!-- <a style="display:inline-flex;" href="https://www.elatoai.com/docs"><img src="assets/docs.png" height="42" style="width: auto;"></a>
-  <a style="display:inline-flex;" href="https://discord.gg/KJWxDPBRUj"><img src="assets/discord.png" height="42" style="width: auto;"></a> -->
-<!-- <a style="display:inline-flex;" href="https://elatoai.com/home"><img src="assets/try.png" height="42" style="width: auto;"></a> -->
-      <!-- <a style="display:inline-flex;" href="https://www.kickstarter.com/projects/elatoai/elato-make-toys-talk-with-ai-voices"><img src="assets/ks.png" height="42" style="width: auto;"></a> -->
- <!-- <a style="display:inline-flex;" href="https://www.elatoai.com/products"><img src="assets/diy.png" height="42" style="width: auto;"></a> -->
-</div>
+**Apple Silicon (M1/M2/M3/M4/M5) · Tauri + React · ESP32-S3 · Whisper ASR · Qwen3-TTS / Chatterbox · MLX LLMs**
+
+<br>
+
+[![App](https://img.shields.io/badge/App-Tauri%20%2B%20React-black)](#stack)
+[![ESP32](https://img.shields.io/badge/Hardware-ESP32--S3-red?logo=espressif&logoColor=white)](#esp32-diy-hardware)
+[![STT](https://img.shields.io/badge/STT-Whisper%20Turbo-success)](#stack)
+[![TTS](https://img.shields.io/badge/TTS-Qwen3--TTS-purple)](#stack)
+[![LLMs](https://img.shields.io/badge/LLM-mlx--community-blue)](#stack)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Releases](https://img.shields.io/badge/Download-Latest%20DMG-brightgreen)](https://github.com/akdeb/open-toys/releases/latest/download/OpenToys_0.1.0_aarch64.dmg)
+
+<br>
+
+> *Build conversational voice AI apps for toys, companions, and robots that run fully local on your Mac.*
+> *No cloud required for runtime, no subscription lock-in, and your data stays on-device.*
+
+<br>
+
 </div>
 
 ## News
