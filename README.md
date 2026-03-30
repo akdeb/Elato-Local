@@ -21,6 +21,17 @@
 
 </div>
 
+## Featured
+ <a href="https://www.hackster.io/news/the-easy-way-to-build-interactive-ai-toys-for-your-kids-0ba401a9328f" target="_blank">
+    <img src="https://github.com/user-attachments/assets/c42ea65b-cf04-488f-bb7d-bdef5158bf24" width="200"/>
+  </a>
+
+**The Easy Way to Build Interactive AI Toys for Your Kids**
+
+<a href="https://www.hackster.io/news/the-easy-way-to-build-interactive-ai-toys-for-your-kids-0ba401a9328f">
+Read the full article →
+</a>
+
 ## 🎥 Demo Video
 
 [![OpenToys Demo](assets/demo.png)](https://youtu.be/V5uNgMRsBHE)
