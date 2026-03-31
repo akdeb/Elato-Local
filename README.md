@@ -21,7 +21,8 @@
 
 </div>
 
-## Featured
+## Featured in
+<div align="center">
  <a href="https://www.hackster.io/news/the-easy-way-to-build-interactive-ai-toys-for-your-kids-0ba401a9328f" target="_blank">
     <img src="https://github.com/user-attachments/assets/c42ea65b-cf04-488f-bb7d-bdef5158bf24" width="200"/>
   </a>
@@ -31,6 +32,7 @@
 <a href="https://www.hackster.io/news/the-easy-way-to-build-interactive-ai-toys-for-your-kids-0ba401a9328f">
 Read the full article →
 </a>
+</div>
 
 ## 🎥 Demo Video
 
