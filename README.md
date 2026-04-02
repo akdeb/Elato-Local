@@ -4,7 +4,7 @@
 
 ### Open-Source Local Voice AI for Toys, Companions, and Robots
 
-**Apple Silicon (M1/M2/M3/M4/M5) · Tauri + React · ESP32-S3 · Whisper ASR · Qwen3-TTS / Chatterbox · MLX LLMs**
+**Apple Silicon · Rust + React · ESP32-S3 · Whisper ASR · Qwen3-TTS · MLX LLMs**
 
 
 [![App](https://img.shields.io/badge/App-Tauri%20%2B%20React-black)](#stack)
