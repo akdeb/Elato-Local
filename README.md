@@ -9,9 +9,6 @@
 
 [![App](https://img.shields.io/badge/App-Tauri%20%2B%20React-black)](#stack)
 [![ESP32](https://img.shields.io/badge/Hardware-ESP32--S3-red?logo=espressif&logoColor=white)](#esp32-diy-hardware)
-[![STT](https://img.shields.io/badge/STT-Whisper%20Turbo-success)](#stack)
-[![TTS](https://img.shields.io/badge/TTS-Qwen3--TTS-purple)](#stack)
-[![LLMs](https://img.shields.io/badge/LLM-mlx--community-blue)](#stack)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Releases](https://img.shields.io/badge/Download-Latest%20DMG-brightgreen)](https://github.com/akdeb/open-toys/releases/latest/download/OpenToys_0.1.0_aarch64.dmg)
 
