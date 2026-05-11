@@ -7,9 +7,9 @@ English | [中文](README.zh.md)
 
 # OpenToys
 
-### Open-Source Local Voice AI for Toys, Companions, and Robots that run on your MacBook
+### Open-source local voice AI for toys, devices, and robots, powered by your MacBook
 
-*OpenToys is the local-first platform version of [ElatoAI](https://www.github.com/akdeb/ElatoAI). No cloud required, no subscription lock-in, and your data stays private on-device.*
+*OpenToys is the local-first platform version of [ElatoAI](https://www.github.com/akdeb/ElatoAI). No cloud required, no subscription lock-in, and your data stays private on-device with inference running locally and a websocket transport to connect to your ESP32-S3.*
 
 **Apple Silicon · Rust + React · ESP32-S3 · Whisper ASR · Qwen3-TTS · MLX LLMs**
 
@@ -34,7 +34,7 @@ English | [中文](README.zh.md)
   <a href="https://arstechnica.com/ai/2026/05/the-new-wild-west-of-ai-kids-toys/" target="_blank">
     <img src="assets/arstechnica.png" width="180" align="left"/>
   </a>
-<strong>AI kids' toys </strong>
+<strong>AI kids' toys roundup </strong>
   <br/>
   <a href="https://www.wired.com/story/the-new-wild-west-of-ai-kids-toys/">Read the ArsTechnica article →</a>
 </p>
