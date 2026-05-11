@@ -36,7 +36,7 @@ English | [中文](README.zh.md)
   </a>
 <strong>AI kids' toys roundup </strong>
   <br/>
-  <a href="https://www.wired.com/story/the-new-wild-west-of-ai-kids-toys/">Read the ArsTechnica article →</a>
+  <a href="https://arstechnica.com/ai/2026/05/the-new-wild-west-of-ai-kids-toys/">Read the ArsTechnica article →</a>
 </p>
 <br clear="left"/>
 
